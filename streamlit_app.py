@@ -19,16 +19,17 @@ URI = '/vivogpt/completions'
 DOMAIN = 'api-ai.vivo.com.cn'
 METHOD = 'POST'
 
-def sync_vivogpt(prompt):
+def sync_vivogpt(messages,prompt):
     params = {
         'requestId': str(uuid.uuid4())
     }
     print('requestId:', params['requestId'])
 
     data = {
-        'prompt': prompt,
+        'messages': messages,
         'model': 'vivo-BlueLM-TB',
         'sessionId': str(uuid.uuid4()),
+        #'systemPrompt':'你的名字叫Moomo情绪探测助手，当回复问题时需要回复你的名字时，必须回复Moomo情绪探测助手，此外回复和你的名字相关的问题时，也需要给出和你的名字对应的合理回复。',
         'extra': {
             'temperature': 0.9
         }
@@ -40,14 +41,14 @@ def sync_vivogpt(prompt):
     url = 'https://{}{}'.format(DOMAIN, URI)
     response = requests.post(url, json=data, headers=headers, params=params)
     
-    print(data['prompt'])
+    print(messages)
     
     if response.status_code == 200:
         res_obj = response.json()
         #print(f'response:{res_obj}')
         if res_obj['code'] == 0 and res_obj.get('data'):
             content = res_obj['data']['content']
-            print(f'final content:\n{content}')
+            print(f'回答:\n{content}')
             return content
     else:
         print(response.status_code, response.text)
@@ -69,11 +70,15 @@ with st.expander('应用介绍'):
 # 初始化session
 if "messages" not in st.session_state:
     st.session_state.messages = []
+    st.session_state.messages.append({"role": "user", "content": ""})
     st.session_state.messages.append({"role": "assistant", "content": "我是你的情绪探测助手Moomo,有什么话都可以和我说哦~"})
 # 渲染历史消息
+i=0
 for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"]) 
+    if(i>0):
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"]) 
+    i+=1
 # 接收用户输入
 if prompt := st.chat_input("请在此输入"):
     # Display user message in chat message container
@@ -86,7 +91,7 @@ if prompt := st.chat_input("请在此输入"):
     with st.chat_message("assistant"):
         message_placeholder = st.empty()
         full_response = ""
-        assistant_response=sync_vivogpt(prompt)
+        assistant_response=sync_vivogpt(st.session_state.messages,prompt)
         # Simulate stream of response with milliseconds delay
         for chunk in assistant_response:
             full_response += chunk
