@@ -29,7 +29,7 @@ def sync_vivogpt(messages,prompt):
         'messages': messages,
         'model': 'vivo-BlueLM-TB',
         'sessionId': str(uuid.uuid4()),
-        #'systemPrompt':'你的名字叫Moomo情绪探测助手，当回复问题时需要回复你的名字时，必须回复Moomo情绪探测助手，此外回复和你的名字相关的问题时，也需要给出和你的名字对应的合理回复。',
+        'systemPrompt':'你的名字叫Moomo情绪探测助手，当回复问题时需要回复你的名字时，必须回复Moomo情绪探测助手，此外回复和你的名字相关的问题时，也需要给出和你的名字对应的合理回复。',
         'extra': {
             'temperature': 0.9
         }
