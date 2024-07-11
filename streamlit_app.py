@@ -70,15 +70,12 @@ with st.expander('应用介绍'):
 # 初始化session
 if "messages" not in st.session_state:
     st.session_state.messages = []
-    st.session_state.messages.append({"role": "user", "content": ""})
     st.session_state.messages.append({"role": "assistant", "content": "我是你的情绪探测助手Moomo,有什么话都可以和我说哦~"})
 # 渲染历史消息
-i=0
 for message in st.session_state.messages:
-    if(i>0):
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"]) 
-    i+=1
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"]) 
+
 # 接收用户输入
 if prompt := st.chat_input("请在此输入"):
     # Display user message in chat message container
